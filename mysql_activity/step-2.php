@@ -1,17 +1,20 @@
 <?php
 
 $firstName = $lastName = $birthday = $contact =
-    $zip = $street = $barangay = $city = '';
+    $zip = $street = $barangay = $city =
+    $email = $password = '';
 
 if (isset($_POST['submit-1'])) {
-    $firstName = htmlentities($_POST['firstName']);
-    $lastName = htmlentities($_POST['lastName']);
+    $firstName = htmlentities(trim($_POST['firstName']));
+    $lastName = htmlentities(trim($_POST['lastName']));
     $birthday = trim($_POST['birthday']);
     $contact = trim($_POST['contact']);
-    $zip = trim($_POST['zip']);
-    $street = htmlentities($_POST['street']);
-    $barangay = htmlentities($_POST['barangay']);
-    $city = htmlentities($_POST['city']);
+    // $zip = trim($_POST['zip']);
+    // $street = htmlentities(trim($_POST['street']));
+    // $barangay = htmlentities(trim($_POST['barangay']));
+    // $city = htmlentities(trim($_POST['city']));
+    // $email = htmlentities(trim($_POST['email']));
+    // $password = htmlentities(trim($_POST['password']));
 }
 
 if (
@@ -24,14 +27,16 @@ if (
     isset($_GET['barangay']) &&
     isset($_GET['city'])
 ) {
-    $firstName = htmlentities($_GET['firstName']);
-    $lastName = htmlentities($_GET['lastName']);
+    $firstName = htmlentities(trim($_GET['firstName']));
+    $lastName = htmlentities(trim($_GET['lastName']));
     $birthday = trim($_GET['birthday']);
-    $contact = htmlentities($_GET['contact']);
+    $contact = trim($_GET['contact']);
     $zip = trim($_GET['zip']);
-    $street = htmlentities($_GET['street']);
-    $barangay = htmlentities($_GET['barangay']);
-    $city = htmlentities($_GET['city']);
+    $street = htmlentities(trim($_GET['street']));
+    $barangay = htmlentities(trim($_GET['barangay']));
+    $city = htmlentities(trim($_GET['city']));
+    $email = htmlentities(trim($_GET['email']));
+    $password = htmlentities(trim($_GET['password']));
 }
 
 ?>
@@ -65,31 +70,37 @@ if (
                             <input type="hidden" name="lastName" value="<?php echo $lastName ?>">
                             <input type="hidden" name="birthday" value="<?php echo $birthday ?>">
                             <input type="hidden" name="contact" value="<?php echo $contact ?>">
+                            <input type="hidden" name="email" value="<?php echo $email ?? '' ?>">
+                            <input type="hidden" name="password" value="<?php echo $password ?? '' ?>">
                             <div class="form d-flex flex-column justify-content-between">
                                 <div class="fields">
                                     <div class="row">
                                         <div class="col-md-3 mt-2">
                                             <label for="zip" class="form-label">Zip Code</label>
-                                            <input type="number" name="zip" id="" class="form-control"
+                                            <input type="number" name="zip" id="zip" class="form-control"
                                                 value="<?php echo $zip ?>">
+                                            <span id="errorZip"></span>
                                         </div>
                                         <div class="col-md-9 mt-2">
                                             <label for="street" class="form-label">Street</label>
-                                            <input type="text" name="street" id="" class="form-control"
+                                            <input type="text" name="street" id="street" class="form-control"
                                                 value="<?php echo $street ?>">
+                                            <span id="errorStreet"></span>
                                         </div>
                                     </div>
 
                                     <div class="row">
                                         <div class="col-md-4 mt-2">
                                             <label for="barangay" class="form-label">Barangay</label>
-                                            <input type="text" name="barangay" id="" class="form-control"
+                                            <input type="text" name="barangay" id="barangay" class="form-control"
                                                 value="<?php echo $barangay ?>">
+                                            <span id="errorBarangay"></span>
                                         </div>
                                         <div class="col-md-4 mt-2">
                                             <label for="city" class="form-label">City</label>
-                                            <input type="text" name="city" id="" class="form-control"
+                                            <input type="text" name="city" id="city" class="form-control"
                                                 value="<?php echo $city ?>">
+                                            <span id="errorCity"></span>
                                         </div>
                                     </div>
                                 </div>
@@ -103,10 +114,13 @@ if (
                                         zip=<?php echo $zip ?> &
                                         street=<?php echo $street ?> &
                                         barangay=<?php echo $barangay ?> &
-                                        city=<?php echo $city ?>">
+                                        city=<?php echo $city ?>  &
+                                        email=<?php echo $email ?> &
+                                        password=<?php echo $password ?>">
                                         Back
                                     </a>
-                                    <button class=" btn btn-dark" type="submit-2" name="submit-2">Next</button>
+                                    <button class=" btn btn-dark" type="submit-2" name="submit-2"
+                                        id="submit-2">Next</button>
                                 </div>
                             </div>
 
@@ -131,6 +145,11 @@ if (
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"
     integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous">
+</script>
+<script src="js/validation.js"></script>
+<script>
+    step2.addEventListener("input", validate2);
+    window.addEventListener("load", validate2);
 </script>
 
 
