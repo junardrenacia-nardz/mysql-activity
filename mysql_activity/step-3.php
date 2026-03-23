@@ -1,11 +1,13 @@
 <?php
-require 'sql-connection/connection.php';
+require 'validation/validate.php';
 
 $firstName = $lastName = $birthday = $contact =
     $zip = $street = $barangay = $city =
     $email = $password = '';
 
-if (isset($_POST['submit-2'])) {
+require 'get_post.php';
+
+if (isset($_POST['preview'])) {
     $firstName = htmlentities(trim($_POST['firstName']));
     $lastName = htmlentities(trim($_POST['lastName']));
     $birthday = trim($_POST['birthday']);
@@ -16,34 +18,31 @@ if (isset($_POST['submit-2'])) {
     $city = htmlentities(trim($_POST['city']));
     $email = htmlentities(trim($_POST['email']));
     $password = htmlentities(trim($_POST['password']));
+    $confirmPassword = htmlentities((trim($_POST['confirmPassword'])));
+
+    $emailValidate = validateEmail($email);
+    $passwordValidate = validatePassword($password);
+    $confirmPasswordValidate = validateConfirmPassword($password, $confirmPassword);
+
+    if (
+        $emailValidate["stmt"] == true &&
+        $passwordValidate["stmt"] == true &&
+        $confirmPasswordValidate["stmt"] == true
+    ) {
+        echo "<script>window.location.href = 'preview.php?"
+            . "firstName=" . urlencode($firstName) . "&"
+            . "lastName=" . urlencode($lastName) . "&"
+            . "birthday=" . urlencode($birthday) . "&"
+            . "contact=" . urlencode($contact) . "&"
+            . "zip=" . urlencode($zip) . "&"
+            . "street=" . urlencode($street) . "&"
+            . "barangay=" . urlencode($barangay) . "&"
+            . "city=" . urlencode($city) . "&"
+            . "email=" . urlencode($email) . "&"
+            . "password=" . urlencode($password)
+            . "';</script>";
+    }
 }
-
-
-
-if (
-    isset($_GET['firstName']) &&
-    isset($_GET['lastName']) &&
-    isset($_GET['birthday']) &&
-    isset($_GET['contact']) &&
-    isset($_GET['zip']) &&
-    isset($_GET['street']) &&
-    isset($_GET['barangay']) &&
-    isset($_GET['city']) &&
-    isset($_GET['email']) &&
-    isset($_GET['password'])
-) {
-    $firstName = htmlentities(trim($_GET['firstName']));
-    $lastName = htmlentities(trim($_GET['lastName']));
-    $birthday = trim($_GET['birthday']);
-    $contact = trim($_GET['contact']);
-    $zip = trim($_GET['zip']);
-    $street = htmlentities(trim($_GET['street']));
-    $barangay = htmlentities(trim($_GET['barangay']));
-    $city = htmlentities(trim($_GET['city']));
-    $email = htmlentities(trim($_GET['email']));
-    $password = htmlentities(trim($_GET['password']));
-}
-
 
 
 ?>
@@ -74,7 +73,7 @@ if (
                 <div class="step-3 col-sm-10">
                     <h2>STEP 3 - Seting an Email and Password</h2>
                     <div class="mt-5 ">
-                        <form action="preview.php" id="step-3-form" method="POST" class="flex-grow-1">
+                        <form action="step-3.php" id="step-3-form" method="POST" class="flex-grow-1 was-validated">
                             <input type="hidden" name="firstName" value="<?php echo $firstName ?>">
                             <input type="hidden" name="lastName" value="<?php echo $lastName ?>">
                             <input type="hidden" name="birthday" value="<?php echo $birthday ?>">
@@ -89,20 +88,23 @@ if (
                                         <div class="col-sm-12 col-md-12 col-lg-6 col-xl-4 mt-2">
                                             <label for="email" class="form-label">Email</label>
                                             <input type="text" name="email" id="email" class="form-control"
-                                                value="<?php echo $email ?>">
-                                            <span id="errorEmail"></span>
+                                                value="<?php echo $email ?>" required>
+                                            <span id="errorEmail"
+                                                class="text-danger fw-bold"><?php echo $emailValidate['error'] ?? ""; ?></span>
                                         </div>
                                         <div class="col-sm-12 col-md-12 col-lg-6 col-xl-4 mt-2">
                                             <label for="password" class="form-label">Password</label>
                                             <input type="password" name="password" id="password" class="form-control"
-                                                value="<?php echo $password ?>">
-                                            <span id="errorPassword"></span>
+                                                value="<?php echo $password ?>" required>
+                                            <span id="errorPassword"
+                                                class="text-danger fw-bold"><?php echo $passwordValidate['error'] ?? ""; ?></span>
                                         </div>
                                         <div class="col-sm-12 col-md-12 col-lg-6 col-xl-4 mt-2">
                                             <label for="confirmPassword" class="form-label">Confirm Password</label>
                                             <input type="password" name="confirmPassword" id="confirmPassword"
-                                                class="form-control" value="<?php echo $password ?>">
-                                            <span id="errorConfirmPassword"></span>
+                                                class="form-control" value="<?php echo $password ?>" required>
+                                            <span id="errorConfirmPassword"
+                                                class="text-danger fw-bold"><?php echo $confirmPasswordValidate['error'] ?? ""; ?></span>
                                         </div>
                                     </div>
 
@@ -150,8 +152,13 @@ if (
 </script>
 <script src="js/validation.js"></script>
 <script>
-    step3.addEventListener("input", validate3);
-    window.addEventListener("load", validate3);
+    step3.addEventListener("input", (e) => {
+        if (validation(form3Arr)) {
+            previewBtn.disabled = false;
+        } else {
+            previewBtn.disabled = true;
+        }
+    });
 </script>
 
 </html>

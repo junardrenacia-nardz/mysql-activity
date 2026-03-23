@@ -1,43 +1,68 @@
 <?php
 
+require 'validation/validate.php';
+
 $firstName = $lastName = $birthday = $contact =
     $zip = $street = $barangay = $city =
     $email = $password = '';
 
-if (isset($_POST['submit-1'])) {
+// if (isset($_POST['submit-1'])) {
+//     $firstName = htmlentities(trim($_POST['firstName']));
+//     $lastName = htmlentities(trim($_POST['lastName']));
+//     $birthday = trim($_POST['birthday']);
+//     $contact = trim($_POST['contact']);
+//     $zip = trim($_POST['zip']);
+//     $street = htmlentities(trim($_POST['street']));
+//     $barangay = htmlentities(trim($_POST['barangay']));
+//     $city = htmlentities(trim($_POST['city']));
+//     $email = htmlentities(trim($_POST['email']));
+//     $password = htmlentities(trim($_POST['password']));
+// }
+
+
+require 'get_post.php';
+
+
+if (isset($_POST['submit-2'])) {
     $firstName = htmlentities(trim($_POST['firstName']));
     $lastName = htmlentities(trim($_POST['lastName']));
     $birthday = trim($_POST['birthday']);
     $contact = trim($_POST['contact']);
-    // $zip = trim($_POST['zip']);
-    // $street = htmlentities(trim($_POST['street']));
-    // $barangay = htmlentities(trim($_POST['barangay']));
-    // $city = htmlentities(trim($_POST['city']));
-    // $email = htmlentities(trim($_POST['email']));
-    // $password = htmlentities(trim($_POST['password']));
+    $zip = trim($_POST['zip']);
+    $street = htmlentities(trim($_POST['street']));
+    $barangay = htmlentities(trim($_POST['barangay']));
+    $city = htmlentities(trim($_POST['city']));
+    $email = htmlentities(trim($_POST['email']));
+    $password = htmlentities(trim($_POST['password']));
+
+    $zipValidate = validateZip($zip);
+    $streetValidate = validateStreet($street);
+    $barangayValidate = validateBgCity($barangay);
+    $cityValidate = validateBgCity($city);
+
+    if (
+        $zipValidate["stmt"] == true &&
+        $streetValidate["stmt"] == true &&
+        $barangayValidate["stmt"] == true &&
+        $cityValidate["stmt"] == true
+    ) {
+        echo "<script>window.location.href = 'step-3.php?"
+            . "firstName=" . urlencode($firstName) . "&"
+            . "lastName=" . urlencode($lastName) . "&"
+            . "birthday=" . urlencode($birthday) . "&"
+            . "contact=" . urlencode($contact) . "&"
+            . "zip=" . urlencode($zip) . "&"
+            . "street=" . urlencode($street) . "&"
+            . "barangay=" . urlencode($barangay) . "&"
+            . "city=" . urlencode($city) . "&"
+            . "email=" . urlencode($email) . "&"
+            . "password=" . urlencode($password)
+            . "';</script>";
+    }
 }
 
-if (
-    isset($_GET['firstName']) &&
-    isset($_GET['lastName']) &&
-    isset($_GET['birthday']) &&
-    isset($_GET['contact']) &&
-    isset($_GET['zip']) &&
-    isset($_GET['street']) &&
-    isset($_GET['barangay']) &&
-    isset($_GET['city'])
-) {
-    $firstName = htmlentities(trim($_GET['firstName']));
-    $lastName = htmlentities(trim($_GET['lastName']));
-    $birthday = trim($_GET['birthday']);
-    $contact = trim($_GET['contact']);
-    $zip = trim($_GET['zip']);
-    $street = htmlentities(trim($_GET['street']));
-    $barangay = htmlentities(trim($_GET['barangay']));
-    $city = htmlentities(trim($_GET['city']));
-    $email = htmlentities(trim($_GET['email']));
-    $password = htmlentities(trim($_GET['password']));
-}
+
+
 
 ?>
 
@@ -65,7 +90,7 @@ if (
                 <div class="step-2 col-sm-10">
                     <h2>STEP 2 - Address</h2>
                     <div class="mt-5 ">
-                        <form id="step-2-form" action="step-3.php" method="POST" class="">
+                        <form id="step-2-form" action="step-2.php" method="POST" class="was-validated">
                             <input type="hidden" name="firstName" value="<?php echo $firstName ?>">
                             <input type="hidden" name="lastName" value="<?php echo $lastName ?>">
                             <input type="hidden" name="birthday" value="<?php echo $birthday ?>">
@@ -78,14 +103,16 @@ if (
                                         <div class="col-md-3 mt-2">
                                             <label for="zip" class="form-label">Zip Code</label>
                                             <input type="number" name="zip" id="zip" class="form-control"
-                                                value="<?php echo $zip ?>">
-                                            <span id="errorZip"></span>
+                                                value="<?php echo $zip ?>" required>
+                                            <span id="errorZip"
+                                                class="text-danger fw-bold"><?php echo $zipValidate['error'] ?? ""; ?></span>
                                         </div>
                                         <div class="col-md-9 mt-2">
                                             <label for="street" class="form-label">Street</label>
                                             <input type="text" name="street" id="street" class="form-control"
-                                                value="<?php echo $street ?>">
-                                            <span id="errorStreet"></span>
+                                                value="<?php echo $street ?>" required>
+                                            <span id="errorStreet"
+                                                class="text-danger fw-bold"><?php echo $streetValidate['error'] ?? ""; ?></span>
                                         </div>
                                     </div>
 
@@ -93,14 +120,16 @@ if (
                                         <div class="col-md-4 mt-2">
                                             <label for="barangay" class="form-label">Barangay</label>
                                             <input type="text" name="barangay" id="barangay" class="form-control"
-                                                value="<?php echo $barangay ?>">
-                                            <span id="errorBarangay"></span>
+                                                value="<?php echo $barangay ?>" required>
+                                            <span id="errorBarangay"
+                                                class="text-danger fw-bold"><?php echo $barangayValidate['error'] ?? ""; ?></span>
                                         </div>
                                         <div class="col-md-4 mt-2">
                                             <label for="city" class="form-label">City</label>
                                             <input type="text" name="city" id="city" class="form-control"
-                                                value="<?php echo $city ?>">
-                                            <span id="errorCity"></span>
+                                                value="<?php echo $city ?>" required>
+                                            <span id="errorCity"
+                                                class="text-danger fw-bold"><?php echo $cityValidate['error'] ?? ""; ?></span>
                                         </div>
                                     </div>
                                 </div>
@@ -148,8 +177,13 @@ if (
 </script>
 <script src="js/validation.js"></script>
 <script>
-    step2.addEventListener("input", validate2);
-    window.addEventListener("load", validate2);
+    step2.addEventListener("input", (e) => {
+        if (validation(form2Arr)) {
+            submit2.disabled = false;
+        } else {
+            submit2.disabled = true;
+        }
+    });
 </script>
 
 

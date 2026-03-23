@@ -1,18 +1,8 @@
 <?php
 require 'sql-connection/connection.php';
 
-if (isset($_POST['preview'])) {
-    $firstName = htmlentities(trim($_POST['firstName']));
-    $lastName = htmlentities(trim($_POST['lastName']));
-    $birthday = trim($_POST['birthday']);
-    $contact = trim($_POST['contact']);
-    $zip = trim($_POST['zip']);
-    $street = htmlentities(trim($_POST['street']));
-    $barangay = htmlentities(trim($_POST['barangay']));
-    $city = htmlentities(trim($_POST['city']));
-    $email = htmlentities(trim($_POST['email']));
-    $password = htmlentities(trim($_POST['password']));
-}
+require 'get_post.php';
+
 
 if (isset($_POST['register'])) {
     $firstName = htmlentities(trim($_POST['firstName']));
@@ -33,7 +23,7 @@ if (isset($_POST['register'])) {
         $address_id_new = mysqli_insert_id($conn);
 
         $details_sql = "INSERT INTO personal_details(first_name, last_name, birthdate, contact_number, address_id, stage) 
-        VALUES ('$firstName', '$lastName', '$birthday', '$contact', $address_id_new, 'Registered')";
+        VALUES ('$firstName', '$lastName', '$birthday', '$contact', $address_id_new, 'Pending')";
 
         if (mysqli_query($conn, $details_sql)) {
             $details_id_new = mysqli_insert_id($conn);
@@ -106,6 +96,8 @@ if (isset($_POST['register'])) {
         }
     </style>
 </head>
+
+
 
 <body>
     <main class="container-fluid d-flex flex-column justify-content-center align-items-center">
@@ -226,6 +218,8 @@ if (isset($_POST['register'])) {
 
 
     </main>
+
+
 
     <!-- Confirm Registration Modal -->
     <div class="modal fade" id="confirmRegistration" tabindex="-1" aria-hidden="true">
