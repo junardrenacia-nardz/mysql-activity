@@ -55,7 +55,7 @@ form3Arr = [
 function validation(fields) {
   let isValid = true;
   fields.forEach(({ field, error }) => {
-    if (field.value === "") {
+    if (field.value.trim() === "") {
       error.textContent = "Input Something";
       isValid = false;
     } else {
@@ -65,4 +65,86 @@ function validation(fields) {
   });
 
   return isValid;
+}
+
+// Password
+const regexPassword = /[^A-Za-z\d@$!%*?&-]/;
+
+let passwordRequirement = document.getElementById("requirement");
+let passwordLength = document.getElementById("length");
+let passwordLowCase = document.getElementById("lowCase");
+let passwordUpCase = document.getElementById("upCase");
+let passwordSpecialChars = document.getElementById("specialChars");
+let passwordNumbers = document.getElementById("nums");
+let passwordInvalid = document.getElementById("invalid");
+
+function validatePassword() {
+  let passwordVal = password.value;
+  passwordRequirement.textContent = "Password Requirement:";
+
+  if (regexPassword.test(passwordVal)) {
+    passwordInvalid.style.display = "block";
+    passwordInvalid.innerHTML = "<li>Password input is invalid</li>";
+    passwordInvalid.style.color = "red";
+    passwordLength.style.display = "none";
+    passwordLowCase.style.display = "none";
+    passwordUpCase.style.display = "none";
+    passwordNumbers.style.display = "none";
+    passwordSpecialChars.style.display = "none";
+  } else {
+    passwordInvalid.style.display = "none";
+    passwordLength.style.display = "block";
+    passwordLowCase.style.display = "block";
+    passwordUpCase.style.display = "block";
+    passwordNumbers.style.display = "block";
+    passwordSpecialChars.style.display = "block";
+  }
+
+  if (passwordVal.length < 8) {
+    passwordLength.innerHTML =
+      "<li>Password must have at least 8 character</li>";
+    passwordLength.style.color = "red";
+  } else {
+    passwordLength.innerHTML =
+      "<li>Password must have at least 8 character</li>";
+    passwordLength.style.color = "green";
+  }
+
+  if (!/^(?=.*[a-z])[A-Za-z\d@$!%*?&-]+$/.test(passwordVal)) {
+    passwordLowCase.innerHTML =
+      "<li>Password must contain a lower cased letter</li>";
+    passwordLowCase.style.color = "red";
+  } else {
+    passwordLowCase.innerHTML =
+      "<li>Password must contain a lower cased letter</li>";
+    passwordLowCase.style.color = "green";
+  }
+
+  if (!/^(?=.*[A-Z])[A-Za-z\d@$!%*?&-]+$/.test(passwordVal)) {
+    passwordUpCase.innerHTML =
+      "<li>Password must contain a upper cased letter</li>";
+    passwordUpCase.style.color = "red";
+  } else {
+    passwordUpCase.innerHTML =
+      "<li>Password must contain a upper cased letter</li>";
+    passwordUpCase.style.color = "green";
+  }
+
+  if (!/^(?=.*\d)[A-Za-z\d@$!%*?&-]+$/.test(passwordVal)) {
+    passwordNumbers.innerHTML = "<li>Password must contain a number</li>";
+    passwordNumbers.style.color = "red";
+  } else {
+    passwordNumbers.innerHTML = "<li>Password must contain a number</li>";
+    passwordNumbers.style.color = "green";
+  }
+
+  if (!/^(?=.*[@$!%*?&-])[A-Za-z\d@$!%*?&-]+$/.test(passwordVal)) {
+    passwordSpecialChars.innerHTML =
+      "<li>Password must contain a special character</li>";
+    passwordSpecialChars.style.color = "red";
+  } else {
+    passwordSpecialChars.innerHTML =
+      "<li>Password must contain a special character</li>";
+    passwordSpecialChars.style.color = "green";
+  }
 }

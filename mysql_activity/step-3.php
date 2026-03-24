@@ -73,7 +73,7 @@ if (isset($_POST['preview'])) {
                 <div class="step-3 col-sm-10">
                     <h2>STEP 3 - Seting an Email and Password</h2>
                     <div class="mt-5 ">
-                        <form action="step-3.php" id="step-3-form" method="POST" class="flex-grow-1 was-validated">
+                        <form action="step-3.php" id="step-3-form" method="POST">
                             <input type="hidden" name="firstName" value="<?php echo $firstName ?>">
                             <input type="hidden" name="lastName" value="<?php echo $lastName ?>">
                             <input type="hidden" name="birthday" value="<?php echo $birthday ?>">
@@ -84,25 +84,52 @@ if (isset($_POST['preview'])) {
                             <input type="hidden" name="city" value="<?php echo $city ?>">
                             <div class="form d-flex flex-column justify-content-between">
                                 <div class="fields">
-                                    <div class="row">
+                                    <div class="row d-flex">
                                         <div class="col-sm-12 col-md-12 col-lg-6 col-xl-4 mt-2">
                                             <label for="email" class="form-label">Email</label>
-                                            <input type="text" name="email" id="email" class="form-control"
-                                                value="<?php echo $email ?>" required>
+                                            <input type="text" name="email" id="email" class="form-control
+                                            <?php
+                                            if (isset($_POST['preview'])) {
+                                                echo $emailValidate['stmt'] ? "is-valid" : "is-invalid";
+                                            }
+                                            ?>" value="<?php echo $email ?>" required>
                                             <span id="errorEmail"
                                                 class="text-danger fw-bold"><?php echo $emailValidate['error'] ?? ""; ?></span>
                                         </div>
                                         <div class="col-sm-12 col-md-12 col-lg-6 col-xl-4 mt-2">
+
                                             <label for="password" class="form-label">Password</label>
-                                            <input type="password" name="password" id="password" class="form-control"
-                                                value="<?php echo $password ?>" required>
-                                            <span id="errorPassword"
-                                                class="text-danger fw-bold"><?php echo $passwordValidate['error'] ?? ""; ?></span>
+                                            <input type="password" name="password" id="password" class="form-control
+                                            <?php
+                                            if (isset($_POST['preview'])) {
+                                                echo $passwordValidate['stmt'] ? "is-valid" : "is-invalid";
+                                            }
+                                            ?>" value="<?php echo $password ?>" required>
+                                            <div class="password-requirements mt-2 d-flex flex-column">
+                                                <span id="errorPassword" class="text-danger fw-bold">
+                                                    <?php echo $passwordValidate['error'] ?? ""; ?></span>
+
+                                                <span class="fw-bold" id="requirement"></span>
+                                                <ul>
+                                                    <span class="" id="length"></span>
+                                                    <span class="" id="lowCase"></span>
+                                                    <span class="" id="upCase"></span>
+                                                    <span class="" id="specialChars"></span>
+                                                    <span class="" id="nums"></span>
+                                                    <span class="" id="invalid"></span>
+                                                </ul>
+
+                                            </div>
                                         </div>
+
                                         <div class="col-sm-12 col-md-12 col-lg-6 col-xl-4 mt-2">
                                             <label for="confirmPassword" class="form-label">Confirm Password</label>
-                                            <input type="password" name="confirmPassword" id="confirmPassword"
-                                                class="form-control" value="<?php echo $password ?>" required>
+                                            <input type="password" name="confirmPassword" id="confirmPassword" class="form-control 
+                                            <?php
+                                            if (isset($_POST['preview'])) {
+                                                echo $confirmPasswordValidate['stmt'] ? "is-valid" : "is-invalid";
+                                            }
+                                            ?>" value="<?php echo $password ?>" required>
                                             <span id="errorConfirmPassword"
                                                 class="text-danger fw-bold"><?php echo $confirmPasswordValidate['error'] ?? ""; ?></span>
                                         </div>
@@ -159,6 +186,8 @@ if (isset($_POST['preview'])) {
             previewBtn.disabled = true;
         }
     });
+
+    password.addEventListener("input", validatePassword)
 </script>
 
 </html>

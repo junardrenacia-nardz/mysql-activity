@@ -90,7 +90,7 @@ if (isset($_POST['submit-2'])) {
                 <div class="step-2 col-sm-10">
                     <h2>STEP 2 - Address</h2>
                     <div class="mt-5 ">
-                        <form id="step-2-form" action="step-2.php" method="POST" class="was-validated">
+                        <form id="step-2-form" action="step-2.php" method="POST">
                             <input type="hidden" name="firstName" value="<?php echo $firstName ?>">
                             <input type="hidden" name="lastName" value="<?php echo $lastName ?>">
                             <input type="hidden" name="birthday" value="<?php echo $birthday ?>">
@@ -102,15 +102,23 @@ if (isset($_POST['submit-2'])) {
                                     <div class="row">
                                         <div class="col-md-3 mt-2">
                                             <label for="zip" class="form-label">Zip Code</label>
-                                            <input type="number" name="zip" id="zip" class="form-control"
-                                                value="<?php echo $zip ?>" required>
+                                            <input type="text" inputmode="numeric" name="zip" id="zip" class="form-control 
+                                                <?php
+                                                if (isset($_POST['submit-2'])) {
+                                                    echo $zipValidate['stmt'] ? "is-valid" : "is-invalid";
+                                                }
+                                                ?>" value="<?php echo $zip ?>" required>
                                             <span id="errorZip"
                                                 class="text-danger fw-bold"><?php echo $zipValidate['error'] ?? ""; ?></span>
                                         </div>
                                         <div class="col-md-9 mt-2">
                                             <label for="street" class="form-label">Street</label>
-                                            <input type="text" name="street" id="street" class="form-control"
-                                                value="<?php echo $street ?>" required>
+                                            <input type="text" name="street" id="street" class="form-control 
+                                                <?php
+                                                if (isset($_POST['submit-2'])) {
+                                                    echo $streetValidate['stmt'] ? "is-valid" : "is-invalid";
+                                                }
+                                                ?>" value="<?php echo $street ?>" required>
                                             <span id="errorStreet"
                                                 class="text-danger fw-bold"><?php echo $streetValidate['error'] ?? ""; ?></span>
                                         </div>
@@ -119,15 +127,23 @@ if (isset($_POST['submit-2'])) {
                                     <div class="row">
                                         <div class="col-md-4 mt-2">
                                             <label for="barangay" class="form-label">Barangay</label>
-                                            <input type="text" name="barangay" id="barangay" class="form-control"
-                                                value="<?php echo $barangay ?>" required>
+                                            <input type="text" name="barangay" id="barangay" class="form-control 
+                                                <?php
+                                                if (isset($_POST['submit-2'])) {
+                                                    echo $barangayValidate['stmt'] ? "is-valid" : "is-invalid";
+                                                }
+                                                ?>" value="<?php echo $barangay ?>" required>
                                             <span id="errorBarangay"
                                                 class="text-danger fw-bold"><?php echo $barangayValidate['error'] ?? ""; ?></span>
                                         </div>
                                         <div class="col-md-4 mt-2">
                                             <label for="city" class="form-label">City</label>
-                                            <input type="text" name="city" id="city" class="form-control"
-                                                value="<?php echo $city ?>" required>
+                                            <input type="text" name="city" id="city" class="form-control 
+                                                <?php
+                                                if (isset($_POST['submit-2'])) {
+                                                    echo $cityValidate['stmt'] ? "is-valid" : "is-invalid";
+                                                }
+                                                ?>" value="<?php echo $city ?>" required>
                                             <span id="errorCity"
                                                 class="text-danger fw-bold"><?php echo $cityValidate['error'] ?? ""; ?></span>
                                         </div>

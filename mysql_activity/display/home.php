@@ -1,12 +1,22 @@
 <?php
+session_start();
+$currentUserId = $_SESSION['user_id'];
+session_regenerate_id(true);
+
+if (!isset($currentUserId)) {
+    header('location: ../index.php');
+    exit;
+}
+
 require '../sql-connection/connection.php';
-require 'editValidation.php';
+require '../validation/validate.php';
 
 $firstName = $lastName = $birthday = $contact =
     $zip = $street = $barangay = $city =
     $email = $password = '';
 
 $isValid = true;
+
 
 // Update User
 if (isset($_POST['update_user'])) {
@@ -34,21 +44,20 @@ if (isset($_POST['update_user'])) {
     $emailValidate = validateEmail($email);
 
     if (
-        $emailValidate["stmt"] == false ||
-        $firstNameValidate["stmt"] == false ||
-        $lastNameValidate["stmt"] == false ||
-        $birthdayValidate["stmt"] == false ||
-        $contactValidate["stmt"] == false ||
-        $zipValidate["stmt"] == false ||
-        $streetValidate["stmt"] == false ||
-        $barangayValidate["stmt"] == false ||
-        $cityValidate["stmt"] == false
+        $emailValidate["stmt"] &&
+        $firstNameValidate["stmt"] &&
+        $lastNameValidate["stmt"] &&
+        $birthdayValidate["stmt"] &&
+        $contactValidate["stmt"] &&
+        $zipValidate["stmt"] &&
+        $streetValidate["stmt"] &&
+        $barangayValidate["stmt"] &&
+        $cityValidate["stmt"]
     ) {
-        $isValid = false;
-    } else {
         $isValid = true;
+    } else {
+        $isValid = false;
     }
-
 
     $editAddress_sql = "UPDATE address SET 
             zip_code = '$zip', 
@@ -61,20 +70,23 @@ if (isset($_POST['update_user'])) {
             first_name = '$firstName',
             last_name = '$lastName',
             birthdate = '$birthday',
-            contact_number = $contact
+            contact_number = '$contact'
         WHERE id = $personalId";
 
     $editUser_sql = "UPDATE users SET
             email = '$email'
         WHERE user_id = $userId";
 
-    $personalDetails = mysqli_query($conn, $editPersonal_sql);
-    $userDetails = mysqli_query($conn, $editUser_sql);
-    $addressDetails = mysqli_query($conn, $editAddress_sql);
+    if ($isValid) {
+        $personalDetails = mysqli_query($conn, $editPersonal_sql);
+        $userDetails = mysqli_query($conn, $editUser_sql);
+        $addressDetails = mysqli_query($conn, $editAddress_sql);
 
-    if ($personalDetails && $userDetails && $addressDetails && $isValid = true) {
-        echo "<script>alert('Row is Updated')</script>";
-    } else {
+        if ($userDetails && $addressDetails && $personalDetails) {
+            echo "<script>alert('Update Successful')</script>";
+        } else {
+            echo "<script>alert('Update Unsuccessful')</script>";
+        }
     }
 }
 
@@ -121,9 +133,12 @@ if (isset($_POST['delete_user'])) {
 </head>
 
 <body>
-    <main>
+
+    <main class="d-flex flex-column justify-content-between">
         <div class="container-fluid p-5 d-flex flex-column align-items-center">
-            <div class="header">
+
+
+            <div class="header mb-4">
                 <h2 class="text-center">Home </h2>
             </div>
 
@@ -145,7 +160,7 @@ if (isset($_POST['delete_user'])) {
                     </thead>
                     <tbody>
                         <?php
-                        $sql = "SELECT p.id, CONCAT(p.first_name, ' ' , p.last_name) AS full_name, p.birthdate, u.email, p.contact_number, a.city, p.stage, p.created_at, p.updated_at
+                        $sql = "SELECT p.id, a.address_id, u.user_id, CONCAT(p.first_name, ' ' , p.last_name) AS full_name, p.birthdate, u.email, p.contact_number, a.city, p.stage, p.created_at, p.updated_at
                         FROM personal_details p
                         INNER JOIN users u
                         ON p.id = u.personal_detail_id
@@ -157,22 +172,22 @@ if (isset($_POST['delete_user'])) {
                             while ($row = mysqli_fetch_assoc($result)): ?>
 
                                 <tr>
-                                    <td><?php echo $row['id'] ?></td>
-                                    <td><?php echo $row['full_name'] ?></td>
-                                    <td><?php echo $row['birthdate'] ?></td>
-                                    <td><?php echo $row['email'] ?></td>
-                                    <td><?php echo $row['contact_number'] ?></td>
-                                    <td><?php echo $row['city'] ?></td>
-                                    <td><?php echo $row['stage'] ?></td>
-                                    <td><?php echo $row['created_at'] ?></td>
-                                    <td><?php echo $row['updated_at'] ?></td>
+                                    <td><?php echo htmlentities($row['id']) ?></td>
+                                    <td><?php echo htmlentities($row['full_name']) ?></td>
+                                    <td><?php echo htmlentities($row['birthdate']) ?></td>
+                                    <td><?php echo htmlentities($row['email']) ?></td>
+                                    <td><?php echo htmlentities($row['contact_number']) ?></td>
+                                    <td><?php echo htmlentities($row['city']) ?></td>
+                                    <td><?php echo htmlentities($row['stage']) ?></td>
+                                    <td><?php echo htmlentities($row['created_at']) ?></td>
+                                    <td><?php echo htmlentities($row['updated_at']) ?></td>
                                     <td>
                                         <div class="d-flex justify-content-between">
                                             <a class="text-success btn btn-sm editUserBtn" href="#" id=""
                                                 data-id='<?php echo $row['id'] ?>' data-bs-toggle='modal'
                                                 data-bs-target='#editUserModal'><i class="fa-solid fa-pen-to-square"></i></a>
                                             <a class="text-primary btn btn-sm deleteUserBtn" href="#"
-                                                data-id='<?php echo $row['id'] ?>' data-bs-toggle='modal'
+                                                data-id='<?php echo $row['address_id'] ?>' data-bs-toggle='modal'
                                                 data-bs-target='#deleteUserModal'><i class=" fa-solid fa-trash"></i></a>
                                         </div>
                                     </td>
@@ -185,36 +200,53 @@ if (isset($_POST['delete_user'])) {
             </div>
         </div>
 
+        <div class="mb-2">
+            <center><a class="btn btn-outline-primary" href="../index.php">Logout</a></center>
+
+        </div>
+
 
     </main>
+
+
 
 
 
     <!-- Edit User Modal -->
     <div class="modal fade" id="editUserModal" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog">
-            <form method="POST" class="modal-content">
+            <form method="POST" class="modal-content" action="home.php">
                 <div class="modal-header">
                     <h5 class="modal-title">Edit User</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body">
-                    <input type="hidden" name="personalId" id="personalId" value="">
-                    <input type="hidden" name="userId" id="userId" value="">
-                    <input type="hidden" name="addressId" id="addressId" value="">
+                    <input type="hidden" name="personalId" id="personalId" value="<?php echo $personalId ?>">
+                    <input type="hidden" name="userId" id="userId" value="<?php echo $userId ?>">
+                    <input type="hidden" name="addressId" id="addressId" value="<?php echo $addressId ?>">
                     <h2>Basic Information</h2>
                     <div class="row">
                         <div class="col-md-6 mt-2 ">
                             <label for="firstName" class="form-label">First Name</label>
-                            <input type="text" name="firstName" id="firstName" class="form-control"
-                                value="<?php echo $firstName ?>" required>
-                            <span id="errorFirstName"></span>
+                            <input type="text" name="firstName" id="firstName" class="form-control
+                            <?php
+                            if (isset($_POST['update_user'])) {
+                                echo $firstNameValidate['stmt'] ? "is-valid" : "is-invalid";
+                            }
+                            ?>" value="<?php echo $firstName ?>" required>
+                            <span id="errorFirstName"
+                                class="text-danger mt-2 fw-bold"><?php echo $firstNameValidate['error'] ?? ""; ?></span>
                         </div>
                         <div class="col-md-6 mt-2">
                             <label for="lastName" class="form-label">Last Name</label>
-                            <input type="text" name="lastName" id="lastName" class="form-control"
-                                value="<?php echo $lastName ?>" required>
-                            <span id="errorLastName"></span>
+                            <input type="text" name="lastName" id="lastName" class="form-control
+                            <?php
+                            if (isset($_POST['update_user'])) {
+                                echo $lastNameValidate['stmt'] ? "is-valid" : "is-invalid";
+                            }
+                            ?>" value="<?php echo $lastName ?>" required>
+                            <span id="errorLastName"
+                                class="text-danger mt-2 fw-bold"><?php echo $lastNameValidate['error'] ?? ""; ?></span>
                         </div>
                     </div>
 
@@ -222,15 +254,25 @@ if (isset($_POST['delete_user'])) {
                     <div class="row">
                         <div class="col-md-6 col-lg-5 col-xl-5 mt-2">
                             <label for="birthday" class="form-label">Birthday</label>
-                            <input type="date" name="birthday" id="birthday" class="form-control"
-                                value="<?php echo $birthday ?>" required>
-                            <span id="errorBirthday"></span>
+                            <input type="date" name="birthday" id="birthday" class="form-control
+                            <?php
+                            if (isset($_POST['update_user'])) {
+                                echo $birthdayValidate['stmt'] ? "is-valid" : "is-invalid";
+                            }
+                            ?>" value="<?php echo $birthday ?>" required>
+                            <span id="errorBirthday"
+                                class="text-danger mt-2 fw-bold"><?php echo $birthdayValidate['error'] ?? ""; ?></span>
                         </div>
                         <div class="col-md-6 col-lg-7 col-xl-7 mt-2">
                             <label for="contact" class="form-label">Contact Number</label>
-                            <input type="number" name="contact" id="contact" class="form-control"
-                                value="<?php echo $contact ?>" required>
-                            <span id="errorContact"></span>
+                            <input type="number" name="contact" id="contact" class="form-control
+                            <?php
+                            if (isset($_POST['update_user'])) {
+                                echo $contactValidate['stmt'] ? "is-valid" : "is-invalid";
+                            }
+                            ?>" value="<?php echo $contact ?>" required>
+                            <span id="errorContact" class="text-danger mt-2 fw-bold">
+                                <?php echo $contactValidate['error'] ?? ""; ?></span>
                         </div>
                     </div>
 
@@ -238,30 +280,50 @@ if (isset($_POST['delete_user'])) {
                     <div class="row">
                         <div class="col-md-3 mt-2">
                             <label for="zip" class="form-label">Zip Code</label>
-                            <input type="number" name="zip" id="zip" class="form-control" value="<?php echo $zip ?>"
-                                required>
-                            <span id="errorZip"></span>
+                            <input type="number" name="zip" id="zip" class="form-control
+                            <?php
+                            if (isset($_POST['update_user'])) {
+                                echo $zipValidate['stmt'] ? "is-valid" : "is-invalid";
+                            }
+                            ?>" value="<?php echo $zip ?>" required>
+                            <span id="errorZip"
+                                class="text-danger mt-2 fw-bold"><?php echo $zipValidate['error'] ?? ""; ?></span>
                         </div>
                         <div class="col-md-9 mt-2">
                             <label for="street" class="form-label">Street</label>
-                            <input type="text" name="street" id="street" class="form-control"
-                                value="<?php echo $street ?>" required>
-                            <span id="errorStreet"></span>
+                            <input type="text" name="street" id="street" class="form-control
+                            <?php
+                            if (isset($_POST['update_user'])) {
+                                echo $streetValidate['stmt'] ? "is-valid" : "is-invalid";
+                            }
+                            ?>" value="<?php echo $street ?>" required>
+                            <span id="errorStreet" class="text-danger mt-2 fw-bold">
+                                <?php echo $streetValidate['error'] ?? ""; ?></span>
                         </div>
                     </div>
 
                     <div class="row">
                         <div class="col-md-6 mt-2">
                             <label for="barangay" class="form-label">Barangay</label>
-                            <input type="text" name="barangay" id="barangay" class="form-control"
-                                value="<?php echo $barangay ?>" required>
-                            <span id="errorBarangay"></span>
+                            <input type="text" name="barangay" id="barangay" class="form-control
+                            <?php
+                            if (isset($_POST['update_user'])) {
+                                echo $barangayValidate['stmt'] ? "is-valid" : "is-invalid";
+                            }
+                            ?>" value="<?php echo $barangay ?>" required>
+                            <span id="errorBarangay"
+                                class="text-danger mt-2 fw-bold"><?php echo $barangayValidate['error'] ?? ""; ?></span>
                         </div>
                         <div class="col-md-6 mt-2">
                             <label for="city" class="form-label">City</label>
-                            <input type="text" name="city" id="city" class="form-control" value="<?php echo $city ?>"
-                                required>
-                            <span id="errorCity"></span>
+                            <input type="text" name="city" id="city" class="form-control
+                            <?php
+                            if (isset($_POST['update_user'])) {
+                                echo $cityValidate['stmt'] ? "is-valid" : "is-invalid";
+                            }
+                            ?>" value="<?php echo $city ?>" required>
+                            <span id="errorCity"
+                                class="text-danger mt-2 fw-bold"><?php echo $emailValidate['error'] ?? ""; ?></span>
                         </div>
                     </div>
 
@@ -272,9 +334,13 @@ if (isset($_POST['delete_user'])) {
                         <div class="row">
                             <div class="col-sm-12 mt-2">
                                 <label for="email" class="form-label">Email</label>
-                                <input type="text" name="email" id="email" class="form-control"
-                                    value="<?php echo $email ?>" required>
-                                <span id="errorEmail"></span>
+                                <input type="text" name="email" id="email" class="form-control
+                                <?php
+                                if (isset($_POST['update_user'])) {
+                                    echo $emailValidate['stmt'] ? "is-valid" : "is-invalid";
+                                }
+                                ?>" value="<?php echo $email ?>" required>
+                                <span id="errorEmail" class="text-danger mt-2 fw-bold"></span>
                             </div>
 
                         </div>
@@ -310,7 +376,7 @@ if (isset($_POST['delete_user'])) {
 </body>
 <script>
     document.addEventListener("DOMContentLoaded", function() {
-        <?php if ($isValid = false) : ?>
+        <?php if (!$isValid) : ?>
             var myModal = new bootstrap.Modal(document.getElementById('editUserModal'));
             myModal.show();
         <?php endif; ?>
@@ -349,22 +415,8 @@ if (isset($_POST['delete_user'])) {
         });
 
         $('.deleteUserBtn').on("click", function() {
-            let userId = $(this).data('id');
+            $('#deleteUserId').val($(this).data('id'));
 
-            $.ajax({
-                url: 'get_value.php',
-                type: 'POST',
-                data: {
-                    id: userId
-                },
-                success: function(response) {
-
-                    let data = JSON.parse(response);
-
-                    $('#deleteUserId').val(data.address_id);
-                    console.log(data)
-                }
-            })
         });
     });
 </script>

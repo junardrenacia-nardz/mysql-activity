@@ -7,7 +7,7 @@ function validateName($data) {
         ];
     } else if (!preg_match('/^[a-z\- \p{L}]+$/u', $data)) {
         return [
-            "error" => "Letters are only accepted",
+            "error" => "The field only accepts letters",
             "stmt" => false
         ];
     } else {

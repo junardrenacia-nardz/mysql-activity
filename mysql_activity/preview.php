@@ -62,7 +62,8 @@ if (isset($_POST['register'])) {
         input[type=text].form-control,
         input[type=date].form-control,
         input[type=password].form-control,
-        input[type=number].form-control {
+        input[type=number].form-control,
+        input[type=tel].form-control {
             background-color: transparent;
             border: 1px solid black;
             font-weight: bolder;
@@ -130,7 +131,7 @@ if (isset($_POST['register'])) {
                                     </div>
                                     <div class="col-md-6 col-lg-3 col-xl-3 mt-2">
                                         <label for="contact" class="form-label">Contact Number</label>
-                                        <input type="number" name="contact" id="contact" class="form-control"
+                                        <input type="tel" name="contact" id="contact" class="form-control"
                                             value="<?php echo $contact ?>" readonly>
                                         <span id="errorContact"></span>
                                     </div>
@@ -140,8 +141,8 @@ if (isset($_POST['register'])) {
                                     <div class="row">
                                         <div class="col-md-3 mt-2">
                                             <label for="zip" class="form-label">Zip Code</label>
-                                            <input type="number" name="zip" id="zip" class="form-control"
-                                                value="<?php echo $zip ?>" readonly>
+                                            <input type="text" inputmode="numeric" name="zip" id="zip"
+                                                class="form-control" value="<?php echo $zip ?>" readonly>
                                             <span id="errorZip"></span>
                                         </div>
                                         <div class="col-md-9 mt-2">

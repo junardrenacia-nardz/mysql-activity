@@ -73,7 +73,7 @@ if (isset($_POST['submit-1'])) {
                 <div class="step-1 col-sm-10">
                     <h2>STEP 1 - Basic Information</h2>
                     <div class="mt-5 ">
-                        <form action="create.php" method="POST" id="form1" class="was-validated">
+                        <form action="create.php" method="POST" id="form1" class="">
                             <input type="hidden" name="zip" value="<?php echo $zip ?? '' ?>">
                             <input type="hidden" name="street" value="<?php echo $street ?? '' ?>">
                             <input type="hidden" name="barangay" value="<?php echo $barangay ?? '' ?>">
@@ -85,30 +85,45 @@ if (isset($_POST['submit-1'])) {
                                     <div class="row">
                                         <div class="col-sm-12 col-md-12 col-lg-6 col-xl-5 mt-2">
                                             <label for="firstName" class="form-label">First Name</label>
-                                            <input type="text" name="firstName" id="firstName"
-                                                class="form-control is-invalid" value="<?php echo $firstName ?>"
-                                                required>
+                                            <input type="text" name="firstName" id="firstName" class="form-control 
+                                                <?php
+                                                if (isset($_POST['submit-1'])) {
+                                                    echo $firstNameValidate['stmt'] ? "is-valid" : "is-invalid";
+                                                }
+                                                ?>" value="<?php echo $firstName ?>" required>
                                             <span id="errorFirstName"
                                                 class="text-danger fw-bold"><?php echo $firstNameValidate['error'] ?? ""; ?></span>
                                         </div>
                                         <div class="col-sm-12 col-md-12 col-lg-6 col-xl-5 mt-2">
                                             <label for="lastName" class="form-label">Last Name</label>
-                                            <input type="text" name="lastName" id="lastName" class="form-control"
-                                                value="<?php echo $lastName ?>" required>
+                                            <input type="text" name="lastName" id="lastName" class="form-control 
+                                                <?php
+                                                if (isset($_POST['submit-1'])) {
+                                                    echo $lastNameValidate['stmt'] ? "is-valid" : "is-invalid";
+                                                }
+                                                ?>" value="<?php echo $lastName ?>" required>
                                             <span id="errorLastName"
                                                 class="text-danger fw-bold"><?php echo $lastNameValidate['error'] ?? ""; ?></span>
                                         </div>
                                         <div class="col-sm-12 col-md-6 col-lg-6 col-xl-2 mt-2">
                                             <label for="birthday" class="form-label">Birthday</label>
-                                            <input type="date" name="birthday" id="birthday" class="form-control"
-                                                value="<?php echo $birthday ?>" required>
+                                            <input type="date" name="birthday" id="birthday" class="form-control 
+                                            <?php
+                                            if (isset($_POST['submit-1'])) {
+                                                echo $birthdayValidate['stmt'] ? "is-valid" : "is-invalid";
+                                            }
+                                            ?>" value="<?php echo $birthday ?>" required>
                                             <span id="errorBirthday"
                                                 class="text-danger fw-bold"><?php echo $birthdayValidate['error'] ?? ""; ?></span>
                                         </div>
                                         <div class="col-md-6 mt-2">
                                             <label for="contact" class="form-label">Contact Number</label>
-                                            <input type="number" name="contact" id="contact" class="form-control"
-                                                value="<?php echo $contact ?>" required>
+                                            <input type="tel" name="contact" id="contact" class="form-control 
+                                                <?php
+                                                if (isset($_POST['submit-1'])) {
+                                                    echo $contactValidate['stmt'] ? "is-valid" : "is-invalid";
+                                                }
+                                                ?>" value="<?php echo $contact ?>" required>
                                             <span id="errorContact"
                                                 class="text-danger fw-bold"><?php echo $contactValidate['error'] ?? ""; ?></span>
                                         </div>
